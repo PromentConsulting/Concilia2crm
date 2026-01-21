@@ -194,11 +194,20 @@
                                 <div class="flex items-center justify-between gap-3">
                                     <span>{{ $account->legal_name ?? '—' }}</span>
                                     @if($account->logo_path)
-                                        <img
-                                            src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($account->logo_path) }}"
-                                            alt="Logo {{ $account->name }}"
-                                            class="h-10 w-auto rounded border border-slate-200 bg-white object-contain p-1"
-                                        >
+                                        @php
+                                            $logoAvailable = \Illuminate\Support\Facades\Storage::disk('public')->exists($account->logo_path);
+                                        @endphp
+                                        @if($logoAvailable)
+                                            <img
+                                                src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($account->logo_path) }}"
+                                                alt="Logo {{ $account->name }}"
+                                                class="h-10 w-auto rounded border border-slate-200 bg-white object-contain p-1"
+                                            >
+                                        @else
+                                            <span class="text-xs text-amber-600">
+                                                Logo no disponible en almacenamiento público.
+                                            </span>
+                                        @endif
                                     @endif
                                 </div>
                             </dd>

@@ -32,12 +32,21 @@
                     class="mt-1 block w-full text-sm text-slate-700 file:mr-4 file:rounded-md file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-700 hover:file:bg-slate-200"
                 >
                 @if(! empty($account?->logo_path))
+                    @php
+                        $logoAvailable = \Illuminate\Support\Facades\Storage::disk('public')->exists($account->logo_path);
+                    @endphp
                     <div class="mt-2">
-                        <img
-                            src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($account->logo_path) }}"
-                            alt="Logo actual"
-                            class="h-12 w-auto rounded border border-slate-200 bg-white object-contain p-1"
-                        >
+                        @if($logoAvailable)
+                            <img
+                                src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($account->logo_path) }}"
+                                alt="Logo actual"
+                                class="h-12 w-auto rounded border border-slate-200 bg-white object-contain p-1"
+                            >
+                        @else
+                            <p class="text-xs text-amber-600">
+                                No se encuentra el archivo del logo en almacenamiento público. Verifica el enlace de storage.
+                            </p>
+                        @endif
                     </div>
                 @endif
                 @error('logo')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
