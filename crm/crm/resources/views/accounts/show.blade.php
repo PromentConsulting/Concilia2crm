@@ -195,11 +195,16 @@
                                     <span>{{ $account->legal_name ?? '—' }}</span>
                                     @if($account->logo_path)
                                         @php
-                                            $logoAvailable = \Illuminate\Support\Facades\Storage::disk('public')->exists($account->logo_path);
+                                            $rawLogoPath = $account->logo_path;
+                                            $normalizedLogoPath = ltrim(preg_replace('#^storage/#', '', $rawLogoPath), '/');
+                                            $logoAvailable = \Illuminate\Support\Facades\Storage::disk('public')->exists($normalizedLogoPath);
+                                            $logoUrl = $logoAvailable
+                                                ? \Illuminate\Support\Facades\Storage::disk('public')->url($normalizedLogoPath)
+                                                : (\Illuminate\Support\Str::startsWith($rawLogoPath, ['http://', 'https://']) ? $rawLogoPath : null);
                                         @endphp
-                                        @if($logoAvailable)
+                                        @if($logoUrl)
                                             <img
-                                                src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($account->logo_path) }}"
+                                                src="{{ $logoUrl }}"
                                                 alt="Logo {{ $account->name }}"
                                                 class="h-10 w-auto rounded border border-slate-200 bg-white object-contain p-1"
                                             >
