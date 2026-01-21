@@ -121,6 +121,7 @@ class AccountRequest extends FormRequest
             'company_size_max'  => ['nullable', 'integer'],
             'founded_year'      => ['nullable', 'integer'],
             'habitantes'        => ['nullable', 'integer'],
+            'logo'              => ['nullable', 'image', 'max:4096'],
 
             // --- Características / certificaciones (existentes) ---
             'public_contracts'      => ['sometimes', 'boolean'],

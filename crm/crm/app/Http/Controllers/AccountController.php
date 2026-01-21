@@ -18,6 +18,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -148,22 +149,24 @@ class AccountController extends Controller
     }
 
     public function store(AccountRequest $request): RedirectResponse
-{
-    // Creamos la cuenta (permitimos posibles duplicados; solo avisamos)
-    $account = Account::create($this->persistableAttributes($request));
+    {
+        // Creamos la cuenta (permitimos posibles duplicados; solo avisamos)
+        $attributes = $this->persistableAttributes($request);
+        $attributes = $this->handleLogoUpload($request, $attributes);
+        $account = Account::create($attributes);
 
-    // Avisos de duplicados (email/teléfono) fuera del mismo grupo empresarial
-    $conflicts = $this->duplicateConflictsForAccount($account);
-    $redirect = redirect()
-        ->route('accounts.show', $account)
-        ->with('status', 'Cuenta creada correctamente.');
+        // Avisos de duplicados (email/teléfono) fuera del mismo grupo empresarial
+        $conflicts = $this->duplicateConflictsForAccount($account);
+        $redirect = redirect()
+            ->route('accounts.show', $account)
+            ->with('status', 'Cuenta creada correctamente.');
 
-    if (!empty($conflicts['email']) || !empty($conflicts['phone'])) {
-        $redirect->with('duplicate_conflicts', $conflicts);
+        if (!empty($conflicts['email']) || !empty($conflicts['phone'])) {
+            $redirect->with('duplicate_conflicts', $conflicts);
+        }
+
+        return $redirect;
     }
-
-    return $redirect;
-}
 
     public function show(Account $account): View
     {
@@ -372,21 +375,23 @@ class AccountController extends Controller
     }
 
     public function update(AccountRequest $request, Account $account): RedirectResponse
-{
-    $account->update($this->persistableAttributes($request, $account));
+    {
+        $attributes = $this->persistableAttributes($request, $account);
+        $attributes = $this->handleLogoUpload($request, $attributes, $account);
+        $account->update($attributes);
 
-    $conflicts = $this->duplicateConflictsForAccount($account);
+        $conflicts = $this->duplicateConflictsForAccount($account);
 
-    $redirect = redirect()
-        ->route('accounts.show', $account)
-        ->with('status', 'Cuenta actualizada correctamente.');
+        $redirect = redirect()
+            ->route('accounts.show', $account)
+            ->with('status', 'Cuenta actualizada correctamente.');
 
-    if (!empty($conflicts['email']) || !empty($conflicts['phone'])) {
-        $redirect->with('duplicate_conflicts', $conflicts);
+        if (!empty($conflicts['email']) || !empty($conflicts['phone'])) {
+            $redirect->with('duplicate_conflicts', $conflicts);
+        }
+
+        return $redirect;
     }
-
-    return $redirect;
-}
 
     public function destroy(Account $account): RedirectResponse
     {
@@ -1348,6 +1353,27 @@ private function normalizeEmail(?string $email): ?string
         return collect($request->validated())
             ->only($allowed)
             ->all();
+    }
+
+    /**
+     * @param array<string, mixed> $attributes
+     * @return array<string, mixed>
+     */
+    private function handleLogoUpload(AccountRequest $request, array $attributes, ?Account $account = null): array
+    {
+        if (! $request->hasFile('logo')) {
+            return $attributes;
+        }
+
+        $path = $request->file('logo')->store('accounts/logos', 'public');
+
+        if ($account?->logo_path) {
+            Storage::disk('public')->delete($account->logo_path);
+        }
+
+        $attributes['logo_path'] = $path;
+
+        return $attributes;
     }
 
     private function mapTipoEntidad(?string $raw): ?string

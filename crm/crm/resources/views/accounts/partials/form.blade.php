@@ -10,17 +10,38 @@
         <h2 class="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">
             Datos principales
         </h2>
-        <div>
-            <label class="block text-sm font-medium text-slate-700">Tipo de cliente</label>
-            <select
-                name="lifecycle"
-                class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#9d1872] focus:outline-none focus:ring-1 focus:ring-[#9d1872]"
-            >
-                <option value="">Sin definir</option>
-                <option value="customer" {{ old('lifecycle', $account->lifecycle ?? '') === 'customer' ? 'selected' : '' }}>Cliente</option>
-                <option value="prospect" {{ old('lifecycle', $account->lifecycle ?? '') === 'prospect' ? 'selected' : '' }}>Cliente potencial</option>
-            </select>
-            @error('lifecycle')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+        <div class="grid gap-4 md:grid-cols-2">
+            <div>
+                <label class="block text-sm font-medium text-slate-700">Tipo de cliente</label>
+                <select
+                    name="lifecycle"
+                    class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#9d1872] focus:outline-none focus:ring-1 focus:ring-[#9d1872]"
+                >
+                    <option value="">Sin definir</option>
+                    <option value="customer" {{ old('lifecycle', $account->lifecycle ?? '') === 'customer' ? 'selected' : '' }}>Cliente</option>
+                    <option value="prospect" {{ old('lifecycle', $account->lifecycle ?? '') === 'prospect' ? 'selected' : '' }}>Cliente potencial</option>
+                </select>
+                @error('lifecycle')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700">Logo</label>
+                <input
+                    type="file"
+                    name="logo"
+                    accept="image/*"
+                    class="mt-1 block w-full text-sm text-slate-700 file:mr-4 file:rounded-md file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-700 hover:file:bg-slate-200"
+                >
+                @if(! empty($account?->logo_path))
+                    <div class="mt-2">
+                        <img
+                            src="{{ \Illuminate\Support\Facades\Storage::url($account->logo_path) }}"
+                            alt="Logo actual"
+                            class="h-12 w-auto rounded border border-slate-200 bg-white object-contain p-1"
+                        >
+                    </div>
+                @endif
+                @error('logo')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+            </div>
         </div>
         <div class="grid gap-4 md:grid-cols-2">
             <div>
