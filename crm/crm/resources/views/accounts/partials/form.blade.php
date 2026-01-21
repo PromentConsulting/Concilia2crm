@@ -33,12 +33,17 @@
                 >
                 @if(! empty($account?->logo_path))
                     @php
-                        $logoAvailable = \Illuminate\Support\Facades\Storage::disk('public')->exists($account->logo_path);
+                        $rawLogoPath = $account->logo_path;
+                        $normalizedLogoPath = ltrim(preg_replace('#^storage/#', '', $rawLogoPath), '/');
+                        $logoAvailable = \Illuminate\Support\Facades\Storage::disk('public')->exists($normalizedLogoPath);
+                        $logoUrl = $logoAvailable
+                            ? \Illuminate\Support\Facades\Storage::disk('public')->url($normalizedLogoPath)
+                            : (\Illuminate\Support\Str::startsWith($rawLogoPath, ['http://', 'https://']) ? $rawLogoPath : null);
                     @endphp
                     <div class="mt-2">
-                        @if($logoAvailable)
+                        @if($logoUrl)
                             <img
-                                src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($account->logo_path) }}"
+                                src="{{ $logoUrl }}"
                                 alt="Logo actual"
                                 class="h-12 w-auto rounded border border-slate-200 bg-white object-contain p-1"
                             >
