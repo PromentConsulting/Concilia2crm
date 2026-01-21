@@ -195,7 +195,7 @@
                                     <span>{{ $account->legal_name ?? '—' }}</span>
                                     @if($account->logo_path)
                                         <img
-                                            src="{{ \Illuminate\Support\Facades\Storage::url($account->logo_path) }}"
+                                            src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($account->logo_path) }}"
                                             alt="Logo {{ $account->name }}"
                                             class="h-10 w-auto rounded border border-slate-200 bg-white object-contain p-1"
                                         >
