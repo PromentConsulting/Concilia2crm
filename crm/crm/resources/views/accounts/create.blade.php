@@ -18,7 +18,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('accounts.store') }}" class="space-y-6">
+        <form method="POST" action="{{ route('accounts.store') }}" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
             @include('accounts.partials.form', [

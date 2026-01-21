@@ -190,7 +190,18 @@
                         </div>
                         <div>
                             <dt class="text-slate-500">Razón social</dt>
-                            <dd class="mt-1 font-medium text-slate-900">{{ $account->legal_name ?? '—' }}</dd>
+                            <dd class="mt-1 font-medium text-slate-900">
+                                <div class="flex items-center justify-between gap-3">
+                                    <span>{{ $account->legal_name ?? '—' }}</span>
+                                    @if($account->logo_path)
+                                        <img
+                                            src="{{ \Illuminate\Support\Facades\Storage::url($account->logo_path) }}"
+                                            alt="Logo {{ $account->name }}"
+                                            class="h-10 w-auto rounded border border-slate-200 bg-white object-contain p-1"
+                                        >
+                                    @endif
+                                </div>
+                            </dd>
                         </div>
                         <div>
                             <dt class="text-slate-500">Nombre abreviado</dt>

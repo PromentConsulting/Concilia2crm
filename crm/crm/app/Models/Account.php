@@ -64,6 +64,7 @@ class Account extends Model
 
         // Lifecycle / tipo de entidad
         'lifecycle',
+        'logo_path',
         'legal_name',
         'fax',
         'company_type',
