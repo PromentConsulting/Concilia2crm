@@ -34,7 +34,7 @@
                 @if(! empty($account?->logo_path))
                     <div class="mt-2">
                         <img
-                            src="{{ \Illuminate\Support\Facades\Storage::url($account->logo_path) }}"
+                            src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($account->logo_path) }}"
                             alt="Logo actual"
                             class="h-12 w-auto rounded border border-slate-200 bg-white object-contain p-1"
                         >
